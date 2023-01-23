@@ -6,6 +6,8 @@ import argparse
 from macaudioutils.setup import *
 
 argparser = argparse.ArgumentParser()
+argparser.add_argument("-A", "--amplitude", type=float, default=0.9,
+					   help="sweep amplitude")
 argparser.add_argument("-r", "--rate", type=int, default=48000,
 					   help="sample rate")
 argparser.add_argument("-d", "--duration", type=float, default=1.0,
@@ -36,7 +38,7 @@ with rec:
 						periodsize=160,
 						mode=alsaaudio.PCM_NORMAL, device="hw:0,1")
 	pcm.write(b"\x00\x00\x00\x00" * pad)
-	pcm.write((signal * 0.9 * 2**31).astype(np.int32).tobytes())
+	pcm.write((signal * args.amplitude * 2**31).astype(np.int32).tobytes())
 
 if args.psd:
 	from matplotlib import pyplot as plt
