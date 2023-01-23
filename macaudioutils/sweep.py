@@ -13,8 +13,8 @@ def planck_taper(N, eps):
 	return ret
 
 def sweep(duration=1.0, Fs=48000, Ftop=None, eps=0.1):
-	Ftop = Ftop or Fs
+	Ftop = Ftop or (Fs / 2)
 	t = np.arange(Fs * duration) / Fs
 	return np.real(np.exp(2j*np.pi * Ftop \
-							/ duration * t**2/4)) \
+							/ duration * t**2/2)) \
 		* planck_taper(len(t), eps)
