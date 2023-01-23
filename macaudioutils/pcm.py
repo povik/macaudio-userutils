@@ -1,5 +1,6 @@
 import alsaaudio
 import time
+import numpy as np
 from threading import Thread
 
 class Recorder(Thread):

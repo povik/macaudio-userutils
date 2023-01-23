@@ -1,6 +1,7 @@
 import alsaaudio
 import fnmatch
 
+from .pcm import *
 from .sweep import *
 
 class Card:
