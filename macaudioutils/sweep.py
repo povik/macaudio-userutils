@@ -18,3 +18,30 @@ def sweep(duration=1.0, Fs=48000, Ftop=None, eps=0.1):
 	return np.real(np.exp(2j*np.pi * Ftop \
 							/ duration * t**2/2)) \
 		* planck_taper(len(t), eps)
+
+def main():
+    import argparse
+    import wave
+
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("WAVE_FILENAME", type=str)
+    argparser.add_argument("-r", "--rate", type=int, default=48000,
+                       help="sample rate")
+    argparser.add_argument("-d", "--duration", type=float, default=1.0,
+                           help="sweep duration (in seconds)")
+    argparser.add_argument("-f", "--Ftop", type=float, default=None,
+                           help="sweep top frequency")
+    args = argparser.parse_args()
+
+    signal = sweep(args.duration, Fs=args.rate, Ftop=args.Ftop, eps=0.03)
+
+    with open(args.WAVE_FILENAME, "wb") as f:
+        wave = wave.Wave_write(f)
+        wave.setnchannels(1)
+        wave.setframerate(args.rate)
+        wave.setsampwidth(4)
+        wave.writeframes((signal * 0.9 * 2**31).astype(np.int32).tobytes())
+        wave.close()
+
+if __name__ == "__main__":
+    main()
