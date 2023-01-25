@@ -4,7 +4,7 @@ import numpy as np
 import sys
 from threading import Thread
 
-class Recorder(Thread):
+class CaptureThread(Thread):
 	def __init__(self, **kwargs):
 		super().__init__()
 		self.should_exit = False
@@ -12,21 +12,6 @@ class Recorder(Thread):
 					 mode=alsaaudio.PCM_NONBLOCK,
 					 periodsize=320, **kwargs)
 		self.pcm_info = self.pcm.info()
-		self._data = []
-
-	@property
-	def sample_dtype(self):
-		return {
-			"S16_LE": np.dtype('<i2'),
-			"S32_LE": np.dtype('<i4'),
-			"FLOAT_LE": np.dtype('<f4'),
-		}[self.pcm_info['format_name']]
-
-	@property
-	def data(self):
-		data_bytes = b"".join(self._data)
-		return np.frombuffer(data_bytes, dtype=self.sample_dtype) \
-			.reshape((-1, self.pcm_info['channels']))
 
 	def run(self):
 		while not self.should_exit:
@@ -37,16 +22,42 @@ class Recorder(Thread):
 			if size < 0:
 				print(f"Capture error: {size}",
 				      file=sys.stderr)
-			self._data.append(buf)
+			samples = np.frombuffer(buf, dtype=self.sample_dtype) \
+						.reshape((-1, self.pcm_info['channels']))
+			self.process_period(samples)
+
 		self.pcm.close()
+
+	@property
+	def sample_dtype(self):
+		return {
+			"S16_LE": np.dtype('<i2'),
+			"S32_LE": np.dtype('<i4'),
+			"FLOAT_LE": np.dtype('<f4'),
+		}[self.pcm_info['format_name']]
+
+	def stop(self):
+		self.should_exit = True
+		self.join()
+
+class Recorder(CaptureThread):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self._chunks = []
+
+	def process_period(self, samples):
+		self._chunks.append(samples)
+
+	@property
+	def data(self):
+		return np.concatenate(self._chunks)
 
 	def __enter__(self):
 		self.start()
 		return self
 
 	def __exit__(self, exc_type, exc_value, exc_traceback):
-		self.should_exit = True
-		self.join()
+		self.stop()
 
 class SenseRecorder(Recorder):
 	def __init__(self, nchans=2, rate=48000):
