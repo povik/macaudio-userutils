@@ -64,3 +64,14 @@ class SenseRecorder(Recorder):
 		Recorder.__init__(self, channels=nchans,
 				  format=alsaaudio.PCM_FORMAT_S16_LE,
 				  device="hw:0,2", rate=rate)
+
+class SenseProcessor(CaptureThread):
+	def __init__(self, consumer, nchans=2, rate=48000):
+		CaptureThread.__init__(self, channels=nchans,
+				 			   format=alsaaudio.PCM_FORMAT_S16_LE,
+							   device="hw:0,2", rate=rate)
+		self.consumer = consumer(self.pcm_info)
+		next(self.consumer)
+
+	def process_period(self, samples):
+		self.consumer.send(samples)
