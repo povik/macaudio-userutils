@@ -32,14 +32,16 @@ def coroutine(pcm_info):
 		data = yield
 		I, V = interpret_sense_data(data)
 
-		curr_watts = np.mean(I * V, axis=0)
+		curr_watts = np.maximum(np.mean(I * V, axis=0),
+								np.zeros_like(avg_watts))
 		avg_watts = 0.02 * curr_watts + 0.98 * avg_watts
 
-		period_joules = np.sum(I * V, axis=0) / pcm_info['rate']
+		period_joules = np.maximum(np.sum(I * V, axis=0) / pcm_info['rate'],
+							       np.zeros_like(avg_watts))
 		sum_joules += period_joules
 
 		print("  ".join(
-			f"CH{idx}: {j:2.02f} J ({w:2.03f} W) "
+			f"CH{idx}: {j:2.03f} J ({w:2.04f} W) "
 			for idx, w, j in zip(range(len(avg_watts)),
 								 avg_watts, sum_joules)
 		), end="    \r")
