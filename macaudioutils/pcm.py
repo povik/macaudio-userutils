@@ -22,6 +22,7 @@ class CaptureThread(Thread):
 			if size < 0:
 				print(f"Capture error: {size}",
 				      file=sys.stderr)
+				continue
 			samples = np.frombuffer(buf, dtype=self.sample_dtype) \
 						.reshape((-1, self.pcm_info['channels']))
 			self.process_period(samples)
