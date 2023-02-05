@@ -6,6 +6,6 @@ from macaudioutils.setup import *
 
 set("Headphone Playback Mux", "Primary")
 set("Speaker Playback Mux", "Secondary")
-set("Speaker", 40)
-set("ISENSE", True)
-set("VSENSE", True)
+set("*Speaker", 40)
+set("*ISENSE", True)
+set("*VSENSE", True)
