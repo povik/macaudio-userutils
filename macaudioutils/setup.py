@@ -9,7 +9,7 @@ class Card:
 		self.no = no
 		self.mixers = [
 			alsaaudio.Mixer(name, cardindex=self.no)
-			for name in alsaaudio.mixers()
+			for name in alsaaudio.mixers(cardindex=self.no)
 		]
 
 	def find_mixer(self, pattern):
