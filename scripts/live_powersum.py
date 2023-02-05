@@ -52,7 +52,7 @@ while True:
 		ind_poll.poll()
 		indicator.handleevents()
 
-	p = SenseProcessor(coroutine, nchans=2)
+	p = SenseProcessor(coroutine, nchans=2 * len(speaker_list))
 	p.start()
 
 	# Wait until speakers are down

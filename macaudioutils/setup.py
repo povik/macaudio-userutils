@@ -3,6 +3,7 @@ import fnmatch
 
 from .pcm import *
 from .sweep import *
+from .info import *
 
 class Card:
 	def __init__(self, no=0):
