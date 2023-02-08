@@ -19,6 +19,10 @@ def sweep(duration=1.0, Fs=48000, Ftop=None, eps=0.1):
 							/ duration * t**2/2)) \
 		* planck_taper(len(t), eps)
 
+def sine(duration=1.0, Fs=48000, F=1000, phase=0):
+	t = np.arange(Fs * duration) / Fs
+	return np.real(np.exp(1j*(2*np.pi * F * t + phase)))
+
 def main():
     import argparse
     import wave
