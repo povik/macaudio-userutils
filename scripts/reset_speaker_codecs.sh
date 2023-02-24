@@ -4,7 +4,7 @@ set -e
 get_driver() {
 	while IFS= read -r -d '' compatible ; do
 		case "$compatible" in
-			ti,tas5770)
+			ti,tas5770l)
 				driver="/sys/bus/i2c/drivers/tas2770"
 				;;
 			ti,sn012776)
@@ -18,7 +18,7 @@ per_speaker_codec() {
 	for candidate in /sys/devices/platform/soc/*.i2c/i2c-*/?-????; do
 		while IFS= read -r -d '' compatible ; do
 			case "$compatible" in
-				ti,tas5770|ti,sn012776)
+				ti,tas5770l|ti,sn012776)
 					if test -f "$candidate/of_node/sound-name-prefix"; then
 						IFS= read -r -d '' name \
 							< $candidate/of_node/sound-name-prefix
