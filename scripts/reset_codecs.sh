@@ -16,6 +16,9 @@ get_driver() {
 			cirrus,cs42l84)
 				driver="/sys/bus/i2c/drivers/cs42l84"
 				;;
+			adi,ssm3515)
+				driver="/sys/bus/i2c/drivers/ssm3515"
+				;;
 		esac
 	done < $candidate/of_node/compatible
 }
@@ -24,7 +27,7 @@ per_speaker_codec() {
 	for candidate in /sys/devices/platform/soc/*.i2c/i2c-*/?-????; do
 		while IFS= read -r -d '' compatible ; do
 			case "$compatible" in
-				ti,tas5770l|ti,sn012776|cirrus,cs42l83|cirrus,cs42l84)
+				ti,tas5770l|ti,sn012776|cirrus,cs42l83|cirrus,cs42l84|adi,ssm3515)
 					if test -f "$candidate/of_node/sound-name-prefix"; then
 						IFS= read -r -d '' name \
 							< $candidate/of_node/sound-name-prefix
