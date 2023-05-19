@@ -35,6 +35,8 @@ try:
 		idle, busy = delta(pivot[0], vals[0]), delta(pivot[1], vals[1])
 		routines = [delta(a, b) for a, b in zip(pivot[2], vals[2])]
 		base = idle + busy
+		if base == 0:
+			base = 1
 		text = f" {spin[0]}"; spin = spin[1:] + spin[:1]
 		text += f" Usage: {busy / base * 100:03.2f}%"
 		for i, rout in enumerate(routines):
