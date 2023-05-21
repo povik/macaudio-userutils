@@ -4,6 +4,45 @@ import numpy as np
 import sys
 from threading import Thread
 
+class PCM:
+	def __init__(self, is_capture, dev, **kwargs):
+		self._pcm = alsaaudio.PCM(alsaaudio.PCM_CAPTURE if is_capture \
+								 else alsaaudio.PCM_PLAYBACK,
+								 device=dev,
+								 mode=alsaaudio.PCM_NORMAL, **kwargs)
+		self._pcm_info = self._pcm.info()
+
+	@property
+	def nonblocking_mode(self):
+		return self._pcm.pcmmode() != alsaaudio.PCM_NORMAL
+
+	@property
+	def sample_dtype(self):
+		return {
+			"S16_LE": np.dtype('<i2'),
+			"S32_LE": np.dtype('<i4'),
+			"FLOAT_LE": np.dtype('<f4'),
+		}[self._pcm_info['format_name']]
+
+	@property
+	def period_size(self):
+		return self._pcm_info['period_size']
+
+	@property
+	def nchannels(self):
+		return self._pcm_info['channels']
+
+	@property
+	def rate(self):
+		return self._pcm_info['rate']
+
+	def read_period(self):
+		assert not self.nonblocking_mode
+		size, buf = self._pcm.read()
+		assert size == self.period_size
+		return np.frombuffer(buf, dtype=self.sample_dtype) \
+							 .reshape((-1, self.nchannels))
+
 class CaptureThread(Thread):
 	def __init__(self, **kwargs):
 		super().__init__()
