@@ -14,7 +14,7 @@ pcm = PCM(True, "hw:0,7", periodsize=4096)
 curves = []
 for i in range(pcm.nchannels):
 	plot = win.addPlot(colspan=1)
-	plot.setLabel('bottom', 'Frequency', 'kHz')
+	plot.setLabel('bottom', 'Frequency', 'Hz')
 	plot.setLabel('left', 'Log Power', 'dB')
 	plot.setYRange(-110, 10)
 	label = pg.LabelItem(f"Chan {i}", size='20pt')
