@@ -39,6 +39,8 @@ class PCM:
 	def read_period(self):
 		assert not self.nonblocking_mode
 		size, buf = self._pcm.read()
+		if size == -32:
+			return self.read_period()
 		assert size == self.period_size
 		return np.frombuffer(buf, dtype=self.sample_dtype) \
 							 .reshape((-1, self.nchannels))
